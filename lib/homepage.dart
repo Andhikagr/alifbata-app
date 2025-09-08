@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:takhmin_sura/level_one/pemula.dart';
 import 'package:takhmin_sura/widget/ink_box.dart';
 
@@ -15,60 +14,36 @@ class _HomepageState extends State<Homepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 20),
-              Text(
-                "Mari belajar!",
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset('assets/bg-7.jpg', fit: BoxFit.cover),
 
-                  fontSize: 16,
-                ),
-              ),
-              SizedBox(height: 15),
-              Stack(
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset("assets/frone.png"),
-                  Positioned.fill(
-                    child: InkBox(
-                      onTap: () => Get.to(
-                        () => Pemula(),
-                        transition: Transition.rightToLeft,
-                        duration: Duration(milliseconds: 400),
-                      ),
+                  InkBox(
+                    imageBox: "assets/frone.png",
+                    onTap: () => Get.to(
+                      () => Pemula(),
+                      transition: Transition.rightToLeft,
+                      duration: Duration(milliseconds: 400),
                     ),
                   ),
+                  SizedBox(height: 30),
+                  InkBox(onTap: () {}, imageBox: "assets/frtwo.png"),
+                  SizedBox(height: 30),
+                  InkBox(onTap: () {}, imageBox: "assets/frthree.png"),
+                  SizedBox(height: 30),
+                  InkBox(onTap: () {}, imageBox: "assets/frfour.png"),
                 ],
               ),
-              SizedBox(height: 15),
-              Stack(
-                children: [
-                  Image.asset("assets/frtwo.png"),
-                  Positioned.fill(child: InkBox(onTap: () {})),
-                ],
-              ),
-              SizedBox(height: 15),
-              Stack(
-                children: [
-                  Image.asset("assets/frthree.png"),
-                  Positioned.fill(child: InkBox(onTap: () {})),
-                ],
-              ),
-              SizedBox(height: 15),
-              Stack(
-                children: [
-                  Image.asset("assets/frfour.png"),
-                  Positioned.fill(child: InkBox(onTap: () {})),
-                ],
-              ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

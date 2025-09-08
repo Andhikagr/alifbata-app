@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/route_manager.dart';
+import 'package:takhmin_sura/homepage.dart';
 
 class Intro extends StatefulWidget {
   const Intro({super.key});
@@ -17,20 +18,19 @@ class _IntroState extends State<Intro> with TickerProviderStateMixin {
     await precacheImage(AssetImage("assets/frthree.png"), context);
     if (!mounted) return;
     await precacheImage(AssetImage("assets/frfour.png"), context);
+    if (!mounted) return;
+    await precacheImage(AssetImage("assets/bg-7.jpg"), context);
 
     Get.offAll(
-      () => _goHomepage(),
+      () => Homepage(),
       transition: Transition.native,
       duration: Duration(milliseconds: 1000),
     );
   }
 
-  //animasi logo
-  late AnimationController _logoController;
+  late AnimationController _boxController;
   late Animation<double> _opacityAnimation;
-  late AnimationController _flipController;
-  late Animation<double> _flipAnimation;
-  //bumi
+
   late AnimationController _earthController;
   //awan 1
   late AnimationController _bounceController;
@@ -39,9 +39,8 @@ class _IntroState extends State<Intro> with TickerProviderStateMixin {
   late AnimationController _cloudController;
   late Animation<double> _cloudOffset;
 
-  //tombol
-  late AnimationController _bottonController;
-  late Animation<Offset> _bottonAnimation;
+  late AnimationController _logoController;
+  late Animation<Offset> _logoAnimation;
 
   //animation posirioned
   double earthBottom = -300;
@@ -55,9 +54,9 @@ class _IntroState extends State<Intro> with TickerProviderStateMixin {
     // Jalankan animasi setelah build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() {
-        earthBottom = -180;
+        earthBottom = -125;
         cloudOneBottom = -150;
-        cloudTwo = 100; // posisi akhir
+        cloudTwo = 80; // posisi akhir
       });
     });
 
@@ -89,92 +88,77 @@ class _IntroState extends State<Intro> with TickerProviderStateMixin {
       CurvedAnimation(parent: _cloudController, curve: Curves.easeInOut),
     );
 
-    //animasi logo
-    _logoController = AnimationController(
+    _boxController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 1000),
     );
     _opacityAnimation = Tween<double>(
       begin: 0,
       end: 1,
-    ).animate(CurvedAnimation(parent: _logoController, curve: Curves.easeIn));
+    ).animate(CurvedAnimation(parent: _boxController, curve: Curves.easeIn));
 
-    //flip logo
-    _flipController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 2000),
-    )..repeat(reverse: true);
-
-    _flipAnimation = Tween<double>(
-      begin: 0,
-      end: 3.14159,
-    ).animate(CurvedAnimation(parent: _flipController, curve: Curves.easeIn));
-
-    Future.delayed(Duration(milliseconds: 5000)).then((_) {
-      _flipController.stop(canceled: false);
-    });
-    //jalankan
-    Future.delayed(Duration(milliseconds: 2000)).then((_) {
-      _logoController.forward();
+    Future.delayed(Duration(seconds: 2)).then((_) {
+      _boxController.forward();
     });
 
-    _bottonController = AnimationController(
+    _logoController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 800),
     );
     //atur animasi 2
-    _bottonAnimation = Tween<Offset>(begin: Offset(-10, 10), end: Offset.zero)
-        .animate(
-          CurvedAnimation(parent: _bottonController, curve: Curves.easeOut),
-        );
-    Future.delayed(Duration(seconds: 4)).then((_) {
-      _bottonController.forward();
-    });
+    _logoAnimation = Tween<Offset>(
+      begin: Offset(0, -20),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(parent: _logoController, curve: Curves.easeOut));
+
+    _logoController.forward();
   }
 
   @override
   void dispose() {
-    super.dispose();
     _earthController.dispose();
     _bounceController.dispose();
     _cloudController.dispose();
     _logoController.dispose();
-    _flipController.dispose();
-    _bottonController.dispose();
+    _boxController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue,
+      backgroundColor: const Color(0xFF2196F3),
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              FadeTransition(
+          Image.asset('assets/bg-7.jpg', fit: BoxFit.cover),
+          Positioned(
+            top: 60,
+            left: 0,
+            right: 0,
+            child: SlideTransition(
+              position: _logoAnimation,
+
+              child: Image.asset('assets/alifbata.png'),
+            ),
+          ),
+
+          Positioned(
+            bottom: 400,
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.center,
+              child: FadeTransition(
                 opacity: _opacityAnimation,
-                child: AnimatedBuilder(
-                  animation: _flipAnimation,
-                  builder: (context, child) {
-                    return Transform(
-                      transform: Matrix4.rotationY(_flipAnimation.value),
-                      alignment: Alignment.center,
-                      child: child,
-                    );
-                  },
-                  child: Image.asset('assets/alifbata.png'),
-                ),
-              ),
-              SlideTransition(
-                position: _bottonAnimation,
                 child: ScaleTransition(
                   scale: _bounceAnimation,
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: _goHomepage,
                     child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 40),
                       width: 150,
-                      height: 50,
+                      height: 45,
                       decoration: BoxDecoration(
                         color: Colors.amberAccent,
                         borderRadius: BorderRadius.circular(30),
@@ -186,6 +170,7 @@ class _IntroState extends State<Intro> with TickerProviderStateMixin {
                           ),
                         ],
                       ),
+
                       child: Center(
                         child: Text(
                           "Start",
@@ -200,15 +185,15 @@ class _IntroState extends State<Intro> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-            ],
+            ),
           ),
 
           AnimatedPositioned(
             duration: Duration(milliseconds: 500),
             curve: Curves.easeIn,
             bottom: cloudOneBottom,
-            right: 80,
-            left: -50,
+            right: 200,
+            left: -250,
             child: ScaleTransition(
               scale: _bounceAnimation,
               child: Image.asset('assets/cloud-1.png'),
